@@ -29,6 +29,7 @@
 #include "Snake.h"
 #include "Food.h"
 #include "Obstacle.h"
+#include "FrameTimer.h"
 
 class Game
 {
@@ -62,5 +63,7 @@ private:
 	int SnakeMovePeriod = 6;
 	int SnakeMoveCounter = 0;
 	int periodCounter = 0;
+
+	FrameTimer ft;
 	/********************************/
 };

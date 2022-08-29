@@ -52,6 +52,9 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	// CALCULATING DELTATIME
+	float deltaTime = ft.Mark();
+
 	std::uniform_int_distribution<int> colorDist(90, 180);
 	if (wnd.kbd.KeyIsPressed(VK_RETURN))
 	{
@@ -93,7 +96,7 @@ void Game::UpdateModel()
 			{
 				food.Respawn(rng, snek, brd);
 				food.SetIsEaten(true);
-				++periodCounter;
+				periodCounter = periodCounter * deltaTime;
 				if (periodCounter % 1 == 0)
 				{
 					obstacles[obstacleIndex].Init(rng, brd, snek);
