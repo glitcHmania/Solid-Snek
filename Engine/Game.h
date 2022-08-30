@@ -60,9 +60,11 @@ private:
 	Obstacle obstacles[100];
 	int obstacleIndex = 0;
 	Location delta_loc = { 0,0 };
-	int SnakeMovePeriod = 6;
-	int SnakeMoveCounter = 0;
+	float SnakeMovePeriod = 0.1f;
+	float SnakeMoveCounter = 0.0f;
 	int periodCounter = 0;
+	float SnakeMoveMultiplier = 0.001f;
+	float SnakeMovePeriodMin = 0.03f;
 
 	FrameTimer ft;
 	/********************************/

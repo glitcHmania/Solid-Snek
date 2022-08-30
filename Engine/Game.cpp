@@ -96,20 +96,18 @@ void Game::UpdateModel()
 			{
 				food.Respawn(rng, snek, brd);
 				food.SetIsEaten(true);
-				periodCounter = periodCounter * deltaTime;
+				periodCounter = periodCounter + 1;
 				if (periodCounter % 1 == 0)
 				{
 					obstacles[obstacleIndex].Init(rng, brd, snek);
 					++obstacleIndex;
 				}
-				if (SnakeMovePeriod > 3 && periodCounter % 3 == 0)
-				{
-					SnakeMovePeriod = SnakeMovePeriod - 1;
-				}
+				
 			}
 
+			SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
 
-			++SnakeMoveCounter;
+			SnakeMoveCounter += deltaTime;
 			if (SnakeMoveCounter >= SnakeMovePeriod)
 			{
 				for (int i = 0; i < obstacleIndex; ++i)
@@ -126,23 +124,14 @@ void Game::UpdateModel()
 				}
 				else
 				{
-					if (wnd.kbd.KeyIsPressed(VK_CONTROL))
-					{
-						snek.Grow(colorDist(rng));
-						if (SnakeMovePeriod > 3 && periodCounter % 3 == 0)
-						{
-							SnakeMovePeriod = SnakeMovePeriod - 1;
-						}
-						++periodCounter;
-					}
-
+				
 					if (food.GetIsEaten())
 					{
 						snek.Grow(colorDist(rng));
 					}
 					snek.MoveBy(delta_loc);
 					food.SetIsEaten(false);
-					SnakeMoveCounter = 0;
+					SnakeMoveCounter -= SnakeMovePeriod;
 				}
 			}
 
