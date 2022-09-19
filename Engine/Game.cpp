@@ -32,7 +32,11 @@ Game::Game(MainWindow& wnd)
 	xDist(1, 78),
 	yDist(1, 58),
 	snek({ 1,1 }),
-	food(rng, snek, brd)
+	food(rng, snek, brd),
+	soundFart(L"Sounds\\fart.wav"),
+	soundFood(L"Sounds\\arkbrick.wav"),
+	soundFail(L"Sounds\\arkpad.wav"),
+	soundStart(L"Sounds\\ready.wav")
 {
 	delta_loc = { 1,0 };
 	std::uniform_int_distribution<int> colorDist(90, 180);
@@ -95,8 +99,9 @@ void Game::UpdateModel()
 			const bool eating = next == food.GetLocation();
 			if (eating)
 			{
+				obstacleCooldownActive = true;
+				soundFood.Play(1.0f, 0.01f);
 				brd.SpawnObstacle(food.GetLocation());
-				snek.MoveBy(delta_loc);
 				food.Respawn(rng, snek, brd);
 				food.SetIsEaten(true);
 				periodCounter = periodCounter + 1;
@@ -105,6 +110,7 @@ void Game::UpdateModel()
 
 			if (brd.CheckForPoison(next))
 			{
+				soundFart.Play(1.0f, 0.005f);
 				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
 				SnakeMoveCounter += deltaTime;
 				brd.DespawnPoison(next);
@@ -114,13 +120,15 @@ void Game::UpdateModel()
 			SnakeMoveCounter += deltaTime;
 			if (SnakeMoveCounter >= SnakeMovePeriod)
 			{
-				if (brd.CheckForObstacle(next))
+				if (brd.CheckForObstacle(next) && !obstacleCooldownActive)
 				{
+					soundFail.Play(1.0f, 0.01f);
 					snek.SetIsDead(true);
 				}
 				if (!brd.isInside(next) ||
 					snek.BodyCollisionTest(next))
 				{
+					soundFail.Play(1.0f, 0.01f);
 					snek.SetIsDead(true);
 				}
 				else
@@ -131,6 +139,7 @@ void Game::UpdateModel()
 						snek.Grow(colorDist(rng));
 					}
 					snek.MoveBy(delta_loc);
+					obstacleCooldownActive = false;
 					food.SetIsEaten(false);
 					SnakeMoveCounter -= SnakeMovePeriod;
 				}
@@ -146,12 +155,17 @@ void Game::UpdateModel()
 	else
 	{
 		SpriteCodex::DrawTitle(brd.GetCenterX() - 52, brd.GetCenterY() - 40, gfx);
+		if (playStartSound)
+		{
+			soundStart.Play(1.0f, 0.01f);
+			playStartSound = false;
+		}
 	}
 }
 
 void Game::ComposeFrame()
 {
-	if (enterIsPressed)
+	if (enterIsPressed && !snek.GetIsDead())
 	{
 		brd.DrawPoisons();
 	}

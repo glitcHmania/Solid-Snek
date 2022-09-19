@@ -29,7 +29,7 @@
 #include "Snake.h"
 #include "Food.h"
 #include "FrameTimer.h"
-
+#include "Sound.h"
 class Game
 {
 public:
@@ -63,7 +63,9 @@ private:
 	int periodCounter = 0;
 	float SnakeMoveMultiplier = 0.001f;
 	float SnakeMovePeriodMin = 0.03f;
-
+	Sound soundFart, soundFood, soundFail, soundStart;
 	FrameTimer ft;
+	bool playStartSound = true;
+	bool obstacleCooldownActive = false;
 	/********************************/
 };

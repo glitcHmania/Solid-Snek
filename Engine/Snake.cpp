@@ -53,6 +53,11 @@ Location& Snake::GetNextHeadLocation(const Location& delta_loc) const
 	return l;
 }
 
+Location& Snake::GetTailLocation()
+{
+	return Location ({segments[usedSegments].loc.x, segments[usedSegments].loc.y });
+}
+
 int Snake::GetHeadLocationX() const
 {
 	return segments[0].loc.x;
