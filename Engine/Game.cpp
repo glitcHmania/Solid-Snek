@@ -94,14 +94,11 @@ void Game::UpdateModel()
 			const bool eating = next == food.GetLocation();
 			if (eating)
 			{
+				brd.SpawnObstacle(food.GetLocation());
+				snek.MoveBy(delta_loc);
 				food.Respawn(rng, snek, brd);
 				food.SetIsEaten(true);
 				periodCounter = periodCounter + 1;
-				if (periodCounter % 1 == 0)
-				{
-					obstacles[obstacleIndex].Init(rng, brd, snek);
-					++obstacleIndex;
-				}
 				
 			}
 
@@ -110,12 +107,9 @@ void Game::UpdateModel()
 			SnakeMoveCounter += deltaTime;
 			if (SnakeMoveCounter >= SnakeMovePeriod)
 			{
-				for (int i = 0; i < obstacleIndex; ++i)
+				if (brd.CheckForObstacle(next))
 				{
-					if (next == obstacles[i].GetLocation())
-					{
-						snek.SetIsDead(true);
-					}
+					snek.SetIsDead(true);
 				}
 				if (!brd.isInside(next) ||
 					snek.BodyCollisionTest(next))
@@ -156,9 +150,6 @@ void Game::ComposeFrame()
 	{
 		food.Draw(brd);
 	}
+	brd.DrawObstacles();
 	snek.Draw(brd);
-	for (int i = 0; i < obstacleIndex; ++i)
-	{
-		obstacles[i].Draw(brd);
-	}
 }

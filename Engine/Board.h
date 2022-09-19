@@ -15,12 +15,18 @@ public:
 	void DrawBorder();
 	int GetCenterX();
 	int GetCenterY();
+	bool CheckForObstacle(const Location& loc) const;
+	void SpawnObstacle(const Location& loc);
+	void DrawObstacles();
 private:
+	static constexpr Color obstacleColor = Colors::Red;
 	static constexpr int dimension = 10;
 	static constexpr int width = 60;
 	static constexpr int height = 45;
 	static constexpr int x = 100;
 	static constexpr int y = 75;
+	bool hasObstacle[width * height] = {false};
+
 	Graphics& gfx;
 };
 

@@ -3,7 +3,6 @@
 #include "Board.h"
 #include "Snake.h"
 #include <random>
-#include "Obstacle.h"
 class Food
 {
 public:

@@ -54,3 +54,27 @@ int Board::GetCenterY()
 {
     return (y + height * dimension) / 2;
 }
+
+void Board::SpawnObstacle(const Location& loc)
+{
+    hasObstacle[loc.y * width + loc.x] = true;
+}
+
+void Board::DrawObstacles()
+{
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (CheckForObstacle({ x, y }))
+            {
+                DrawCell({ x,y }, obstacleColor);
+            }
+        }
+    }
+}
+
+bool Board::CheckForObstacle( const Location& loc) const
+{
+    return hasObstacle[loc.y* width + loc.x];
+}

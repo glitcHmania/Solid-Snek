@@ -28,7 +28,6 @@
 #include <random>
 #include "Snake.h"
 #include "Food.h"
-#include "Obstacle.h"
 #include "FrameTimer.h"
 
 class Game
@@ -57,7 +56,6 @@ private:
 	std::uniform_int_distribution<int> yDist;
 	Snake snek;
 	Food food;
-	Obstacle obstacles[100];
 	int obstacleIndex = 0;
 	Location delta_loc = { 0,0 };
 	float SnakeMovePeriod = 0.1f;
