@@ -40,6 +40,7 @@ Game::Game(MainWindow& wnd)
 	snek.MoveBy({ 1,0 });
 	snek.Grow(colorDist(rng));
 	snek.MoveBy({ 1,0 });
+	brd.SpawnPoisons(rng);
 }
 
 void Game::Go()
@@ -102,8 +103,14 @@ void Game::UpdateModel()
 				
 			}
 
-			SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
+			if (brd.CheckForPoison(next))
+			{
+				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
+				SnakeMoveCounter += deltaTime;
+				brd.DespawnPoison(next);
+			}
 
+			SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
 			SnakeMoveCounter += deltaTime;
 			if (SnakeMoveCounter >= SnakeMovePeriod)
 			{
@@ -144,6 +151,10 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	if (enterIsPressed)
+	{
+		brd.DrawPoisons();
+	}
 	brd.DrawBorder();
 	// DRAWING OBJECTS
 	if (!food.GetIsEaten())

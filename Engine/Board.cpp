@@ -60,6 +60,27 @@ void Board::SpawnObstacle(const Location& loc)
     hasObstacle[loc.y * width + loc.x] = true;
 }
 
+void Board::SpawnPoisons(std::mt19937& rng)
+{
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            std::uniform_int_distribution<int> dist(0, 4);
+            const int prob = dist(rng);
+            if (prob == 1)
+            {
+                hasPoison[y * width + x] = true;
+            }
+        }
+    }
+}
+
+void Board::DespawnPoison(const Location& loc)
+{
+    hasPoison[loc.y * width + loc.x] = false;
+}
+
 void Board::DrawObstacles()
 {
     for (int x = 0; x < width; x++)
@@ -74,7 +95,26 @@ void Board::DrawObstacles()
     }
 }
 
+void Board::DrawPoisons()
+{
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (CheckForPoison({ x, y }))
+            {
+                DrawCell({ x,y }, poisonColor);
+            }
+        }
+    }
+}
+
 bool Board::CheckForObstacle( const Location& loc) const
 {
     return hasObstacle[loc.y* width + loc.x];
+}
+
+bool Board::CheckForPoison(const Location& loc) const
+{
+    return hasPoison[loc.y * width + loc.x];
 }
