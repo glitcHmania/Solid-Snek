@@ -8,6 +8,12 @@
 class Board
 {
 public:
+	enum class Objects {
+		Empty,
+		Food,
+		Obstacle,
+		Poison
+	};
 	Board(Graphics& in_gfx);
 	void DrawCell(const Location& loc, Color c);
 	int GetWidth();
@@ -16,11 +22,10 @@ public:
 	void DrawBorder();
 	int GetCenterX();
 	int GetCenterY();
-	bool CheckForObstacle(const Location& loc) const;
-	bool CheckForPoison(const Location& loc) const;
+	Objects CheckForObject(const Location& loc) const;
 	void SpawnObstacle(const Location& loc);
 	void SpawnPoisons(std::mt19937& rng);
-	void DespawnPoison(const Location& loc);
+	void DespwanObject(const Location& loc);
 	void DrawObstacles();
 	void DrawPoisons();
 private:
@@ -31,8 +36,7 @@ private:
 	static constexpr int height = 45;
 	static constexpr int x = 100;
 	static constexpr int y = 75;
-	bool hasObstacle[width * height] = { false };
-	bool hasPoison[width * height] = { false };
+	Objects objects[width * height] = { Objects::Empty };
 
 	Graphics& gfx;
 };

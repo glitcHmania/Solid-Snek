@@ -22,7 +22,6 @@ public:
 	void Grow(int random_number);
 	void Draw(Board& brd);
 	Location& GetNextHeadLocation(const Location& delta_loc) const;
-	Location& GetTailLocation();
 	int GetHeadLocationX() const;
 	int GetHeadLocationY() const;
 	void SetHeadLocationX(int new_x);

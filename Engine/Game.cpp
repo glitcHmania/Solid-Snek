@@ -70,29 +70,8 @@ void Game::UpdateModel()
 
 		if (!snek.GetIsDead())
 		{
-			// SNAKE MOVEMENT
-			if (wnd.kbd.KeyIsPressed(VK_UP) &&
-				!(delta_loc.x == 0 && delta_loc.y == 1))
-			{
-				delta_loc = { 0,-1 };
-			}
-			if (wnd.kbd.KeyIsPressed(VK_DOWN) &&
-				!(delta_loc.x == 0 && delta_loc.y == -1))
-			{
-				delta_loc = { 0,1 };
-			}
-			if (wnd.kbd.KeyIsPressed(VK_RIGHT) &&
-				!(delta_loc.x == -1 && delta_loc.y == 0))
-			{
-				delta_loc = { 1,0 };
-			}
-			if (wnd.kbd.KeyIsPressed(VK_LEFT) &&
-				!(delta_loc.x == 1 && delta_loc.y == 0))
-			{
-				delta_loc = { -1,0 };
-			}
+			
 			const Location next = snek.GetNextHeadLocation(delta_loc);
-
 
 			// RESPAWNING FOOD AND SPEEDING THE SNAKE UP
 			// ADJUSTING FRAME PER SECOND
@@ -100,35 +79,35 @@ void Game::UpdateModel()
 			if (eating)
 			{
 				obstacleCooldownActive = true;
-				soundFood.Play(1.0f, 0.01f);
+				snek.MoveBy(delta_loc);
+				soundFood.Play(1.0f, 0.03f);
 				brd.SpawnObstacle(food.GetLocation());
 				food.Respawn(rng, snek, brd);
 				food.SetIsEaten(true);
 				periodCounter = periodCounter + 1;
-				
-			}
-
-			if (brd.CheckForPoison(next))
-			{
-				soundFart.Play(1.0f, 0.005f);
 				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
-				SnakeMoveCounter += deltaTime;
-				brd.DespawnPoison(next);
 			}
 
-			SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
-			SnakeMoveCounter += deltaTime;
-			if (SnakeMoveCounter >= SnakeMovePeriod)
+			if (brd.CheckForObject(next) == Board::Objects::Poison)
 			{
-				if (brd.CheckForObstacle(next) && !obstacleCooldownActive)
-				{
-					soundFail.Play(1.0f, 0.01f);
-					snek.SetIsDead(true);
-				}
+				soundFart.Play(1.0f, 0.015f);
+				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
+				brd.DespwanObject(next);
+			}
+
+			float ModifiedSnakeMovePeriod = SnakeMovePeriod;
+			if (wnd.kbd.KeyIsPressed(VK_CONTROL))
+			{
+				ModifiedSnakeMovePeriod = std::min(SnakeMovePeriod, LowSnakeMovePeriod);
+			}
+
+			SnakeMoveCounter += deltaTime;
+			if (SnakeMoveCounter >= ModifiedSnakeMovePeriod)
+			{
 				if (!brd.isInside(next) ||
 					snek.BodyCollisionTest(next))
 				{
-					soundFail.Play(1.0f, 0.01f);
+					soundFail.Play(1.0f, 0.03f);
 					snek.SetIsDead(true);
 				}
 				else
@@ -139,11 +118,38 @@ void Game::UpdateModel()
 						snek.Grow(colorDist(rng));
 					}
 					snek.MoveBy(delta_loc);
-					obstacleCooldownActive = false;
 					food.SetIsEaten(false);
-					SnakeMoveCounter -= SnakeMovePeriod;
+					SnakeMoveCounter -= ModifiedSnakeMovePeriod;
+					obstacleCooldownActive = false;
+				}
+
+				// SNAKE MOVEMENT
+				if (wnd.kbd.KeyIsPressed(VK_UP) &&
+					!(delta_loc.x == 0 && delta_loc.y == 1))
+				{
+					delta_loc = { 0,-1 };
+				}
+				else if (wnd.kbd.KeyIsPressed(VK_DOWN) &&
+					!(delta_loc.x == 0 && delta_loc.y == -1))
+				{
+					delta_loc = { 0,1 };
+				}
+				else if (wnd.kbd.KeyIsPressed(VK_RIGHT) &&
+					!(delta_loc.x == -1 && delta_loc.y == 0))
+				{
+					delta_loc = { 1,0 };
+				}
+				else if (wnd.kbd.KeyIsPressed(VK_LEFT) &&
+					!(delta_loc.x == 1 && delta_loc.y == 0))
+				{
+					delta_loc = { -1,0 };
 				}
 			}
+			if (brd.CheckForObject(next)== Board::Objects::Obstacle && !obstacleCooldownActive)
+				{
+					soundFail.Play(1.0f, 0.03f);
+					snek.SetIsDead(true);
+				}
 
 		}
 		else
@@ -157,10 +163,11 @@ void Game::UpdateModel()
 		SpriteCodex::DrawTitle(brd.GetCenterX() - 52, brd.GetCenterY() - 40, gfx);
 		if (playStartSound)
 		{
-			soundStart.Play(1.0f, 0.01f);
+			soundStart.Play(1.0f, 0.03f);
 			playStartSound = false;
 		}
 	}
+
 }
 
 void Game::ComposeFrame()

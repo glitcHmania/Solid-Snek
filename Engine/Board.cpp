@@ -57,7 +57,7 @@ int Board::GetCenterY()
 
 void Board::SpawnObstacle(const Location& loc)
 {
-    hasObstacle[loc.y * width + loc.x] = true;
+    objects[loc.y * width + loc.x] = Objects::Obstacle;
 }
 
 void Board::SpawnPoisons(std::mt19937& rng)
@@ -70,15 +70,15 @@ void Board::SpawnPoisons(std::mt19937& rng)
             const int prob = dist(rng);
             if (prob == 1)
             {
-                hasPoison[y * width + x] = true;
+                objects[y * width + x] = Objects::Poison;
             }
         }
     }
 }
 
-void Board::DespawnPoison(const Location& loc)
+void Board::DespwanObject(const Location& loc)
 {
-    hasPoison[loc.y * width + loc.x] = false;
+    objects[loc.y * width + loc.x] = Objects::Empty;
 }
 
 void Board::DrawObstacles()
@@ -87,7 +87,7 @@ void Board::DrawObstacles()
     {
         for (int y = 0; y < height; y++)
         {
-            if (CheckForObstacle({ x, y }))
+            if (CheckForObject({ x, y }) == Objects::Obstacle)
             {
                 DrawCell({ x,y }, obstacleColor);
             }
@@ -101,7 +101,7 @@ void Board::DrawPoisons()
     {
         for (int y = 0; y < height; y++)
         {
-            if (CheckForPoison({ x, y }))
+            if (CheckForObject({ x, y }) == Objects::Poison)
             {
                 DrawCell({ x,y }, poisonColor);
             }
@@ -109,12 +109,7 @@ void Board::DrawPoisons()
     }
 }
 
-bool Board::CheckForObstacle( const Location& loc) const
+Board::Objects Board::CheckForObject(const Location& loc) const
 {
-    return hasObstacle[loc.y* width + loc.x];
-}
-
-bool Board::CheckForPoison(const Location& loc) const
-{
-    return hasPoison[loc.y * width + loc.x];
+    return objects[loc.y * width + loc.x];
 }

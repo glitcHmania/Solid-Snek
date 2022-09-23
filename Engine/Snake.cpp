@@ -8,7 +8,7 @@ Snake::Snake(const Location& loc)
 
 bool Snake::BodyCollisionTest(const Location& target)
 {
-	for (int i = 0; i < usedSegments - 1; ++i)
+	for (int i = 1; i < usedSegments - 1; ++i)
 	{
 		if (segments[i].loc == target)
 		{
@@ -51,11 +51,6 @@ Location& Snake::GetNextHeadLocation(const Location& delta_loc) const
 	Location l(segments[0].loc);
 	l.Add(delta_loc);
 	return l;
-}
-
-Location& Snake::GetTailLocation()
-{
-	return Location ({segments[usedSegments].loc.x, segments[usedSegments].loc.y });
 }
 
 int Snake::GetHeadLocationX() const
