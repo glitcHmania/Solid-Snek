@@ -88,11 +88,20 @@ void Game::UpdateModel()
 				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
 			}
 
-			if (brd.CheckForObject(next) == Board::Objects::Poison)
+			switch (brd.CheckForObject(next))
 			{
+			case Board::Objects::Poison:
 				soundFart.Play(1.0f, 0.015f);
 				SnakeMovePeriod = std::max(SnakeMovePeriod - deltaTime * SnakeMoveMultiplier, SnakeMovePeriodMin);
 				brd.DespwanObject(next);
+				break;
+			case Board::Objects::Obstacle :
+				if (!obstacleCooldownActive)
+				{
+					soundFail.Play(1.0f, 0.03f);
+					snek.SetIsDead(true);
+				}
+				break;
 			}
 
 			float ModifiedSnakeMovePeriod = SnakeMovePeriod;
@@ -145,11 +154,6 @@ void Game::UpdateModel()
 					delta_loc = { -1,0 };
 				}
 			}
-			if (brd.CheckForObject(next)== Board::Objects::Obstacle && !obstacleCooldownActive)
-				{
-					soundFail.Play(1.0f, 0.03f);
-					snek.SetIsDead(true);
-				}
 
 		}
 		else
